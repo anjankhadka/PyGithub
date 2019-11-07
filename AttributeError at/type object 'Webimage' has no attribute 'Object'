@@ -1,0 +1,59 @@
+views.py
+
+from django.shortcuts import render,redirect
+from .forms import ImageForm
+from .models import Webimage
+# Create your views here.
+def home(request):
+	context = { 'Webimage': Webimage.Object.all() }
+	return render(request,'post/home.html', context)
+
+def ImageUpload(request):
+	if request.method=="POST":
+		form=ImageForm(request.POST, request.FILES)
+		if form.is_valid():
+			form.save()
+			return redirect('/')
+	else:
+		form=ImageForm()
+		return render(request, 'post/form.html',{'form':form})
+  
+ models.py
+ 
+ from django.db import models
+from django.contrib.auth.models import User
+# Create your models here.
+class Webimage(models.Model):
+	name=models.CharField(max_length=100)
+	image=models.ImageField(default='default.jpg', upload_to='profile_pics')
+
+	def __str__(self):
+		return f'{ self.name }'
+ 
+ home.html
+ <!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+this is home page
+
+<a href="{% url 'home'%}">home click</a>
+<br>
+{% for image in webimage %}
+{{image.name}
+{{image.image}}
+{% endfor%}
+</body>
+</html>
+
+urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+	path('',views.home,name='home'),
+	path('upload/', views.ImageUpload, name='upload')
+	
+] 
